@@ -1,95 +1,79 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import Link from "next/link";
+import { Eye, Calendar } from "lucide-react";
+import BlogCardSkeleton from "@/components/ui/blogCardSkeleton";
 
-type Blog = {
-  id: string;
-  title: string;
-  excerpt: string;
-  coverImage?: string;
-  createdAt: string;
-  tags: string[];
-};
 
-export const revalidate = 30; 
 
-async function getBlogs(): Promise<Blog[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs`, {
-    next: { revalidate: 30 },
-  });
+export const revalidate = 60;
 
-  if (!res.ok) throw new Error("Failed to fetch blogs");
-  const data = await res.json();
-  return data?.data || [];
+async function getBlogs() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs`, { next: { revalidate: 60 } });
+  const json = await res.json();
+  return json.data;
 }
 
-export default async function AllBlogsPage() {
+export default async function BlogsPage() {
   const blogs = await getBlogs();
-
+ 
   return (
-    <div className="py-20 px-4 max-w-7xl mx-auto">
-      <h2 className="text-center text-4xl font-bold mb-10 text-white">
-        All Blogs
-      </h2>
+    <section className="max-w-6xl mt-12 mx-auto px-6 py-16">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Explore Blogs</h1>
+        <p className="text-gray-500 max-w-2xl mx-auto">Here I share my stroies, journey, coding story and some dev observation</p>
+      </div>
 
-      {blogs.length === 0 ? (
-        <div className="text-center text-gray-400 text-lg">
-          No blogs found yet.
-        </div>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {blogs.map((blog) => (
-            <div
-              key={blog.id}
-              className="bg-[#111111] border border-gray-800 rounded-xl p-5 hover:border-rose-500 transition duration-300"
-            >
-              {/* Image */}
-              {blog.coverImage && (
-                <Image
-                  src={blog.coverImage}
-                  alt={blog.title}
-                  width={20}
-                  height={20}
-                  className="w-full h-44 object-cover rounded-lg mb-4"
-                />
-              )}
 
-              {/* Title */}
-              <h3 className="text-xl font-semibold mb-2 text-white">
-                {blog.title.length > 40
-                  ? blog.title.slice(0, 40) + "..."
-                  : blog.title}
-              </h3>
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {blogs.length === 0 &&
+          Array.from({ length: 6 }).map((_, i) => <BlogCardSkeleton key={i} />)}
 
-              {/* Excerpt */}
-              <p className="text-gray-400 text-sm mb-4">
-                {blog.excerpt.length > 80
-                  ? blog.excerpt.slice(0, 80) + "..."
-                  : blog.excerpt}
-              </p>
+        {blogs.map((blog: any) => (
+          <div key={blog.id} className="group rounded-xl border border-gray-200 hover:shadow-lg transition overflow-hidden bg-white flex flex-col">
+            <div className="relative w-full h-56">
+              <Image
+                src={blog.coverImage}
+                alt={blog.title}
+                fill
+                className="object-cover group-hover:scale-105 transition"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </div>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {blog.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-gray-800 text-gray-300 text-xs px-2 py-1 rounded-full"
-                  >
-                    #{tag}
-                  </span>
-                ))}
+            <div className="p-5 flex flex-col justify-between flex-1">
+              <div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {blog.tags.map((tag: string) => (
+                    <span key={tag} className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600">#{tag}</span>
+                  ))}
+                </div>
+                <h2 className="text-lg font-semibold line-clamp-2 mb-2 group-hover: text-foreground transition">
+                  {blog.title}
+                </h2>
+                <p className="text-gray-500 text-sm line-clamp-3 mb-4">{blog.excerpt}</p>
               </div>
 
-              {/* CTA */}
+              <div className="flex justify-between items-center text-sm text-gray-400">
+                <span className="flex items-center gap-1">
+                  <Calendar size={16} />
+                  {new Date(blog.createdAt).toLocaleDateString()}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Eye size={16} /> {blog.views}
+                </span>
+              </div>
+
               <Link
-                href={`/blogs/${blog.id}`}
-                className="inline-flex items-center text-rose-500 hover:text-rose-400 font-medium"
+                href={`/blogs/${blog.slug}`}
+                className="mt-4 inline-block text-center px-4 py-2 bg-accent-foreground text-white rounded-md text-sm font-medium hover:bg-gray-500 transition"
               >
                 Read More →
               </Link>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
