@@ -21,7 +21,7 @@ export default async function BlogsPage() {
     <section className="max-w-6xl mt-12 mx-auto px-6 py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Explore Blogs</h1>
-        <p className="text-gray-500 max-w-2xl mx-auto">Here I share my stroies, journey, coding story and some dev observation</p>
+        <p className="text-gray-500 max-w-2xl mx-auto">Here I share my stroies, journey, coding story and some dev observations</p>
       </div>
 
 

@@ -3,8 +3,29 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, PlusCircle, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
+  const router = useRouter();
+
+  const logOut = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include", 
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to logout");
+      }
+
+     
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <aside className="flex h-screen w-64 flex-col border-r bg-black text-white">
       {/* Top navigation */}
@@ -31,9 +52,7 @@ export default function Sidebar() {
         <Button
           variant="destructive"
           className="w-full justify-start gap-2 cursor-pointer"
-          onClick={() => {
-            console.log("Logout clicked");
-          }}
+          onClick={logOut}
         >
           <LogOut className="h-4 w-4" />
           Logout
