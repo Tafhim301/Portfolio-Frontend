@@ -1,9 +1,12 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { NavMenu } from "./nav-menu";
+import Link from "next/link";
 
-export const NavigationSheet = () => {
+export const NavigationSheet = ({ isAdmin }: { isAdmin?: boolean }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -12,10 +15,13 @@ export const NavigationSheet = () => {
         </Button>
       </SheetTrigger>
       <SheetContent>
-        {/* <Logo />
-         */}
-         Logo
-        <NavMenu orientation="vertical" className="mt-12" />
+        {/* Logo placeholder (can be replaced with your actual <Logo /> component) */}
+        <div className="text-xl font-bold mb-8">
+          <Link href="/">Logo</Link>
+        </div>
+
+        {/* Mobile Nav Menu */}
+        <NavMenu isAdmin={isAdmin} orientation="vertical" className="mt-4"  />
       </SheetContent>
     </Sheet>
   );

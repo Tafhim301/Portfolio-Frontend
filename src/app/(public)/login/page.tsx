@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
-import {Eye,EyeOff} from 'lucide-react'
+
 
 
 
@@ -25,7 +25,7 @@ type LoginSchema = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [seePassword,setSeePassword] = useState(false)
+
   
   const {
     register,
@@ -58,7 +58,7 @@ export default function LoginPage() {
       toast.success("Login successful");
       router.push("/dashboard");
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error(`Something went wrong`);
     } finally {
       setLoading(false);
     }
@@ -73,6 +73,7 @@ export default function LoginPage() {
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1920"
             alt="Login background"
             fill
+            sizes="full"
             className="object-cover"
           />
         </div>
@@ -130,8 +131,8 @@ export default function LoginPage() {
                 {loading ? <Loader2 className="animate-spin w-4 h-4" /> : "Login"}
               </Button>
 
-              <p className="text-center text-sm text-gray-500 mt-2">
-                This page is restricted to the <span className="font-medium text-black">admin only</span>.
+              <p className="text-center text-sm font-semibold text-gray-500 mt-2">
+                Manage your blogs, projects, and portfolio content from <span className="font-medium text-black">one place</span>.
               </p>
             </form>
           </CardContent>
