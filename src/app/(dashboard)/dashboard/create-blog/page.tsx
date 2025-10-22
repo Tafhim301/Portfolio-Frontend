@@ -1,11 +1,10 @@
-import React from "react";
+import BlogForm from "@/components/dashboard/BlogForm";
 
-const CreateBlog = () => {
+export default function NewBlogPage() {
   return (
     <div>
-      <h1 className="text-center text-xl">Create Blog</h1>
+      <h1 className="text-3xl font-bold text-center mb-4">Create New Blog</h1>
+      <BlogForm mode="create" />
     </div>
   );
-};
-
-export default CreateBlog;
+}
