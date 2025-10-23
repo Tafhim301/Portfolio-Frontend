@@ -10,13 +10,13 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 import {
-    Form,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormControl,
-    FormMessage,
-    FormDescription,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,183 +25,192 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const blogSchema = z.object({
-    title: z.string().min(5, "Title must be at least 5 characters"),
-    excerpt: z.string().min(20, "Excerpt must be at least 20 characters"),
-    content: z.string().min(1, "Content is required"),
-    tags: z.string().optional(),
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  excerpt: z.string().min(20, "Excerpt must be at least 20 characters"),
+  content: z.string().min(1, "Content is required"),
+  tags: z.string().optional(),
 });
 
 type BlogFormValues = z.infer<typeof blogSchema> & {
-    coverFile?: File | null;
+  coverFile?: File | null;
 };
 
 type Props = {
-    mode: "create" | "edit";
-    blogId?: string;
-    slug?: string;
-    initial?: {
-        title?: string;
-        excerpt?: string;
-        content?: string;
-        tags?: string[];
-        coverImage?: string;
-    };
-    autosaveKey?: string;
+  mode: "create" | "edit";
+  blogId?: string;
+  slug?: string;
+  initial?: {
+    title?: string;
+    excerpt?: string;
+    content?: string;
+    tags?: string[];
+    coverImage?: string;
+  };
+  autosaveKey?: string;
 };
 
 export default function AdvancedBlogForm({
-    mode,
-    blogId,
-    initial,
-    slug,
-    autosaveKey = "blog:draft",
+  mode,
+  blogId,
+  initial,
+  slug,
+  autosaveKey = "blog:draft",
 }: Props) {
 
-    const quillRef = useRef<ReactQuill | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [coverPreview, setCoverPreview] = useState<string | undefined>(
-        initial?.coverImage
-    );
-    const [wordCount, setWordCount] = useState(0);
-    const router = useRouter()
+  const quillRef = useRef<ReactQuill | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [coverPreview, setCoverPreview] = useState<string | undefined>(
+    initial?.coverImage
+  );
+  const [wordCount, setWordCount] = useState(0);
+  const router = useRouter()
 
-    const form = useForm<BlogFormValues>({
-        resolver: zodResolver(blogSchema),
-        defaultValues: {
-            title: initial?.title || "",
-            excerpt: initial?.excerpt || "",
-            content: initial?.content || "",
-            tags: initial?.tags?.join(", ") || "",
-            coverFile: null,
-        },
+  const form = useForm<BlogFormValues>({
+    resolver: zodResolver(blogSchema),
+    defaultValues: {
+      title: initial?.title || "",
+      excerpt: initial?.excerpt || "",
+      content: initial?.content || "",
+      tags: initial?.tags?.join(", ") || "",
+      coverFile: null,
+    },
+  });
+
+
+  const calculateWordCount = (html: string) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    const text = tmp.textContent || tmp.innerText || "";
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  };
+
+
+  useEffect(() => {
+    const saved = (() => {
+      try {
+        const raw = localStorage.getItem(autosaveKey);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    })();
+
+    if (saved && mode === "create") {
+      form.reset({
+        title: saved.title ?? "",
+        excerpt: saved.excerpt ?? "",
+        content: saved.content ?? "",
+        tags: saved.tags ?? "",
+        coverFile: null,
+      });
+      setCoverPreview(saved.coverImage ?? undefined);
+    }
+  }, [form, mode, autosaveKey]);
+
+  useEffect(() => {
+
+    if (mode !== "create") return;
+
+    const interval = setInterval(() => {
+      const values = form.getValues();
+      const payload = {
+        title: values.title,
+        excerpt: values.excerpt,
+        content: values.content,
+        tags: values.tags,
+        coverImage: coverPreview,
+      };
+      localStorage.setItem(autosaveKey, JSON.stringify(payload));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [form, coverPreview, autosaveKey, mode]);
+
+  useEffect(() => {
+    const sub = form.watch((value, { name }) => {
+      if (name === "content") {
+        setWordCount(calculateWordCount(value.content || ""));
+      }
     });
-
-    // ---------- word count helper ----------
-    const calculateWordCount = (html: string) => {
-        const tmp = document.createElement("div");
-        tmp.innerHTML = html || "";
-        const text = tmp.textContent || tmp.innerText || "";
-        return text.trim().split(/\s+/).filter(Boolean).length;
-    };
-
-    // ---------- (Autosave and word count logic - no changes) ----------
-    useEffect(() => {
-        const saved = (() => {
-            try {
-                const raw = localStorage.getItem(autosaveKey);
-                return raw ? JSON.parse(raw) : null;
-            } catch {
-                return null;
-            }
-        })();
-
-        if (saved && mode === "create") {
-            form.reset({
-                title: saved.title ?? "",
-                excerpt: saved.excerpt ?? "",
-                content: saved.content ?? "",
-                tags: saved.tags ?? "",
-                coverFile: null,
-            });
-            setCoverPreview(saved.coverImage ?? undefined);
-        }
-    }, [form, mode, autosaveKey]);
-
-    useEffect(() => {
-
-        if (mode !== "create") return;
-
-        const interval = setInterval(() => {
-            const values = form.getValues();
-            const payload = {
-                title: values.title,
-                excerpt: values.excerpt,
-                content: values.content,
-                tags: values.tags,
-                coverImage: coverPreview,
-            };
-            localStorage.setItem(autosaveKey, JSON.stringify(payload));
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [form, coverPreview, autosaveKey, mode]);
-
-    useEffect(() => {
-        const sub = form.watch((value, { name }) => {
-            if (name === "content") {
-                setWordCount(calculateWordCount(value.content || ""));
-            }
-        });
-        return () => sub.unsubscribe();
-    }, [form]);
+    return () => sub.unsubscribe();
+  }, [form]);
 
 
-    const onSubmit = async (values: BlogFormValues) => {
-        if (!values.content || values.content === "<p><br></p>") {
-            toast.error("Content cannot be empty");
-            return;
-        }
+  const onSubmit = async (values: BlogFormValues) => {
+    if (!values.content || values.content === "<p><br></p>") {
+      toast.error("Content cannot be empty");
+      return;
+    }
 
-        setLoading(true);
-        try {
-            const delta = quillRef.current?.getEditor().getContents();
-            const contentToSend = JSON.stringify(delta);
+    setLoading(true);
+    try {
+      const delta = quillRef.current?.getEditor().getContents();
+      const contentToSend = JSON.stringify(delta);
 
-            const blogData = {
-                blog: {
-                    title: values.title,
-                    excerpt: values.excerpt,
-                    content: contentToSend,
-                    tags: values.tags ? values.tags.split(",").map((t) => t.trim()) : [],
-                },
-            };
+      const blogData = {
+        blog: {
+          title: values.title,
+          excerpt: values.excerpt,
+          content: contentToSend,
+          tags: values.tags ? values.tags.split(",").map((t) => t.trim()) : [],
+        },
+      };
 
 
-            const coverFile = form.getValues("coverFile");
+      const coverFile = form.getValues("coverFile");
 
-            const formData = new FormData();
-            if (coverFile) {
-                formData.append("file", coverFile);
-            }
-            formData.append("data", JSON.stringify(blogData));
+      const formData = new FormData();
+      if (coverFile) {
+        formData.append("file", coverFile);
+      }
+      formData.append("data", JSON.stringify(blogData));
 
-            const url =
-                mode === "create"
-                    ? `${process.env.NEXT_PUBLIC_API_URL}/blogs`
-                    : `${process.env.NEXT_PUBLIC_API_URL}/blogs/${blogId}`;
+      const url =
+        mode === "create"
+          ? `${process.env.NEXT_PUBLIC_API_URL}/blogs`
+          : `${process.env.NEXT_PUBLIC_API_URL}/blogs/${blogId}`;
 
-            const res = await fetch(url, {
-                method: mode === "create" ? "POST" : "PATCH",
-                credentials: "include",
-                body: formData,
-            });
+      const res = await fetch(url, {
+        method: mode === "create" ? "POST" : "PATCH",
+        credentials: "include",
+        body: formData,
+      });
 
-            const payload = await res.json();
 
-            if (!res.ok) {
-                toast.error(payload?.message || "Failed to save blog");
-                return;
-            }
 
-            if (mode === "create") localStorage.removeItem(autosaveKey);
-            toast.success(mode === "create" ? "Blog created" : "Blog updated");
-            router.push(mode === "create" ? "/blogs" : `/blogs/${slug}`)
-        } catch (err) {
-            console.error(err);
-            toast.error("Unexpected error saving blog");
-        } finally {
-            setLoading(false);
-        }
-    };
+      const payload = await res.json();
 
-    const handleCoverChange = (file?: File | null) => {
-        if (!file) {
-            setCoverPreview(initial?.coverImage);
-            return;
-        }
-        setCoverPreview(URL.createObjectURL(file));
-    };
+      if (!res.ok) {
+        toast.error(payload?.message || "Failed to save blog");
+        return;
+      }
 
-   return (
+      if (mode === "create") {
+        localStorage.removeItem(autosaveKey)
+
+      };
+      toast.success(mode === "create" ? "Blog created" : "Blog updated");
+      await fetch("/api/revalidate", {
+        method: "POST",
+        body: JSON.stringify({ path: "/blogs" }),
+      });
+      router.push(mode === "create" ? "/blogs" : `/blogs/${slug}`)
+    } catch (err) {
+      console.error(err);
+      toast.error("Unexpected error saving blog");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCoverChange = (file?: File | null) => {
+    if (!file) {
+      setCoverPreview(initial?.coverImage);
+      return;
+    }
+    setCoverPreview(URL.createObjectURL(file));
+  };
+
+  return (
     <div className="min-h-screen w-full flex items-end justify-center">
       <div className="w-full max-w-4xl bg-white rounded-md shadow-sm p-4 sm:p-6">
         <h2 className="text-2xl font-semibold mb-4">
@@ -210,7 +219,7 @@ export default function AdvancedBlogForm({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Title */}
+
             <FormField
               control={form.control}
               name="title"
@@ -340,8 +349,8 @@ export default function AdvancedBlogForm({
                     ? "Creating..."
                     : "Updating..."
                   : mode === "create"
-                  ? "Create Blog"
-                  : "Update Blog"}
+                    ? "Create Blog"
+                    : "Update Blog"}
               </Button>
 
               {mode === "create" && (

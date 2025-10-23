@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Calendar, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Delta } from "quill";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 
 export const revalidate = 60;
 
@@ -15,10 +17,19 @@ async function getBlog(slug: string) {
 export default async function BlogDetailsPage({ params }: { params: { slug: string } }) {
   const blog = await getBlog(params.slug);
 
+  // Convert Delta JSON (string) -> HTML
+  let htmlContent = "";
+  try {
+    const delta = typeof blog.content === "string" ? JSON.parse(blog.content) as Delta : blog.content;
+    const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
+    htmlContent = converter.convert();
+  } catch (error) {
+    console.error("Error converting blog content:", error);
+  }
+
   return (
     <div className="max-w-3xl mt-8 mx-auto px-4 py-16">
       <Card className="space-y-6">
-       
         <CardHeader>
           <CardTitle className="text-4xl font-bold">{blog.title}</CardTitle>
           <CardDescription>
@@ -35,7 +46,6 @@ export default async function BlogDetailsPage({ params }: { params: { slug: stri
           </CardDescription>
         </CardHeader>
 
-        {/* Card Content */}
         <CardContent className="space-y-6">
           {/* Cover Image */}
           <div className="relative w-full h-96 rounded-xl overflow-hidden">
@@ -60,12 +70,11 @@ export default async function BlogDetailsPage({ params }: { params: { slug: stri
             ))}
           </div>
 
-          {/* Content */}
-          <div className="prose text-sm font-semibold max-w-none">
-            {blog.content.split("\n").map((p: string, i: number) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
+          {/* Rich Content */}
+          <div
+            className="prose max-w-none text-gray-800"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
         </CardContent>
       </Card>
     </div>
