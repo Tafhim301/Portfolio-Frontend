@@ -28,7 +28,7 @@ export default async function UpdateBlogPage({ params }: { params: { slug: strin
 
   if (!blog) return notFound();
 
-  // --- Convert delta (if present) to HTML ---
+
   let contentHTML = "";
   try {
     const parsed = JSON.parse(blog.content);
@@ -42,7 +42,7 @@ export default async function UpdateBlogPage({ params }: { params: { slug: strin
     contentHTML = blog.content;
   }
 
-  // --- Render AdvancedBlogForm in edit mode ---
+
   return (
     <section className="py-10 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-semibold mb-6">Edit Blog</h1>
