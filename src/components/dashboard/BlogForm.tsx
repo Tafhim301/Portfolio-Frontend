@@ -53,7 +53,6 @@ export default function AdvancedBlogForm({
   mode,
   blogId,
   initial,
-  slug,
   autosaveKey = "blog:draft",
 }: Props) {
 
@@ -193,7 +192,7 @@ export default function AdvancedBlogForm({
         method: "POST",
         body: JSON.stringify({ path: "/blogs" }),
       });
-      router.push(mode === "create" ? "/blogs" : `/blogs/${slug}`)
+      router.push(mode === "create" ? "/blogs" : `/blogs/${payload?.data?.slug}`)
     } catch (err) {
       console.error(err);
       toast.error("Unexpected error saving blog");
