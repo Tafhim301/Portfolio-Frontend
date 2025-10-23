@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Separator } from "../ui/separator";
+
 
 
 export default function Sidebar() {
@@ -76,18 +78,7 @@ export default function Sidebar() {
 
      
       <nav className="flex-1 overflow-y-auto p-3 space-y-4">
-        <Link
-          href="/"
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-            pathname === "/"
-              ? "bg-gray-200 text-black"
-              : "hover:bg-gray-800 hover:text-white"
-          )}
-        >
-          <Home size={18} />
-          {!collapsed && "Home"}
-        </Link>
+       
 
         {navGroups.map((group) => (
           <div key={group.title}>
@@ -117,9 +108,25 @@ export default function Sidebar() {
                   </Link>
                 );
               })}
+
+              <Separator/>
             </div>
           </div>
         ))}
+
+
+               <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+            pathname === "/"
+              ? "bg-gray-200 text-black"
+              : "hover:bg-gray-800 hover:text-white"
+          )}
+        >
+          <Home size={18} />
+          {!collapsed && "Home"}
+        </Link>
       </nav>
 
       {/* Footer */}
