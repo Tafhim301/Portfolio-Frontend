@@ -29,7 +29,8 @@ import {
   Hash,
   Atom,
   Rocket,
-  Lightbulb
+  Lightbulb,
+  DatabaseZapIcon
 } from "lucide-react";
 
 export type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -129,6 +130,7 @@ export const aboutData: AboutData = {
     databases: [
       { name: "MongoDB", icon: Database },
       { name: "PostgreSQL", icon: Database },
+      {name : "Mongoose", icon : DatabaseZapIcon}
     ],
     tools: [
       { name: "Git", icon: GitBranch },
@@ -147,7 +149,7 @@ export const aboutData: AboutData = {
   education: {
     level: "Higher-Secondary (Class 11)",
     institution: "Govt. City College, Chattogram",
-    focus: ["Physics", "Mathematics", "Computer Science"],
+    focus: ["Physics", "Mathematics"],
     icon: GraduationCap,
   },
 
