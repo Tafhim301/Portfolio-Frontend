@@ -37,11 +37,11 @@ export default function Hero() {
   return (
     <div className="">
       <section className="relative flex flex-col items-center justify-center text-center w-full overflow-hidden text-white px-6 py-10 pt-20
-      bg-gradient-to-tr from-black via-gray-900 to-gray-800
+      bg-gradient-to-tr from-zinc-500 via-zinc-900 to-gray-800
       bg-[length:400%_400%] animate-[gradient_15s_ease_infinite]">
 
       {/* Profile Photo */}
-      <div className="mb-6 rounded-full border-4 border-red-600 overflow-hidden w-40 h-40">
+      <div className="mb-6 rounded-full border-4 border-orange-700 overflow-hidden w-40 h-40">
         <Image
           src="/profile.jpg"
           alt="Tafhimul Islam"

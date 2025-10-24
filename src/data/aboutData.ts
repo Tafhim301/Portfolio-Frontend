@@ -162,5 +162,5 @@ export const aboutData: AboutData = {
     { name: "Space Exploration", icon: Rocket },
     { name: "Problem Solving", icon: Lightbulb },
   ],
-heroRoles: [ "Learner", "Explorer","Developer", "Full-Stack Dev", "AI Enthusiast"],
+heroRoles: [ "Learner","Explorer","Developer", "Full-Stack Developer", "Enthusiast"],
 };
