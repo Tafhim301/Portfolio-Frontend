@@ -155,7 +155,7 @@ export default function AddProjects() {
       }
 
       toast.success('Project created successfully!');
-      router.push('dashboard/manage-blogs');
+      router.push('/manage-blogs');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Upload error:', error);

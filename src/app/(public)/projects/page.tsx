@@ -72,7 +72,7 @@ export default function ProjectsSection() {
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {projects && projects.length > 0 ? (
-              projects.slice(0, 3).map((proj, idx) => (
+              projects.map((proj, idx) => (
                 <div key={proj.id} className="opacity-0  card-enter">
                   <Card
                     className="group flex h-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden"

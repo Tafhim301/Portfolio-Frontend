@@ -1,9 +1,6 @@
-const DashboardHomePage = () => {
-  return (
-    <div>
-      <h1>Dashboard Home Page</h1>
-    </div>
-  );
-};
 
-export default DashboardHomePage;
+import { redirect } from 'next/navigation';
+
+export default function DashboardPage() {
+  redirect('/dashboard/manage-blogs');
+}
