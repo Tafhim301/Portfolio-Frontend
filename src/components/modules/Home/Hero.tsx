@@ -4,6 +4,7 @@ import { aboutData } from "@/data/aboutData";
 import Image from "next/image";
 import React from "react";
 import { Mail, LocationEdit } from "lucide-react";
+import Link from "next/link";
 
 export default function Hero() {
   const { personalInformation, heroRoles } = aboutData;
@@ -100,12 +101,12 @@ export default function Hero() {
 
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <a
+        <Link
           href="/projects"
           className="px-8 py-4 rounded-xl border border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition"
         >
           View Projects
-        </a>
+        </Link>
         <a
           href="/contact"
           className="px-8 py-4 rounded-xl bg-red-600 text-white hover:bg-red-700 transition"

@@ -48,17 +48,16 @@ export default function ProjectsSection() {
     fetchProjects();
   }, []);
 
-  // Helper function to shorten description
   const truncateText = (text: string, limit: number) => {
     return text.length > limit ? text.slice(0, limit) + "..." : text;
   };
 
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-gray-100">
+    <main className="py-20 px-6 bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Featured <span className="text-red-600">Projects</span>
+           My <span className="text-red-600">Projects</span>
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Explore innovative solutions built with modern technologies and creative design.
@@ -210,22 +209,7 @@ export default function ProjectsSection() {
           </div>
         )}
       </div>
-     <div className="flex justify-center mt-16">
-        <div
-          className="flex justify-center items-center px-6 py-5 rounded-2xl 
-          bg-white/10 border border-white/10 
-          backdrop-blur-xl shadow-xl 
-          transition-all duration-500 hover:bg-white/20 hover:shadow-2xl"
-        >
-          <Button
-            onClick={() => router.push("/projects")}
-            className="
-            font-semibold text-lg px-6 py-2 rounded-xl shadow-md transition-all duration-300"
-          >
-            View All Projects
-          </Button>
-        </div>
-      </div>
-    </section>
+   
+    </main>
   );
 }
