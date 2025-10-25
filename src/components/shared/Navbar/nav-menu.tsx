@@ -37,6 +37,11 @@ export const NavMenu = ({ className, isAdmin, orientation = "horizontal" }: NavM
             <Link href="/about">About</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link href="/projects">Projects</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
 
        
         {isAdmin && (

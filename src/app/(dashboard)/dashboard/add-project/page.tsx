@@ -139,7 +139,7 @@ export default function AddProjects() {
     formData.append('thumbnail', thumbnail);
     demoImages.forEach((img) => formData.append('demoImages', img));
 
-    // Match Prisma model exactly
+   
     formData.append('data', JSON.stringify({ project: data }));
 
     try {
@@ -155,7 +155,7 @@ export default function AddProjects() {
       }
 
       toast.success('Project created successfully!');
-      router.push('/manage-blogs');
+      router.push('/dashboard/manage-projects');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Upload error:', error);
