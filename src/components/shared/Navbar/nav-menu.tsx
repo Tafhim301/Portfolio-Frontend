@@ -12,6 +12,8 @@ interface NavMenuProps {
   orientation?: "horizontal" | "vertical"; 
 }
 
+
+
 export const NavMenu = ({ className, isAdmin, orientation = "horizontal" }: NavMenuProps) => {
   return (
     <NavigationMenu className={className}>
@@ -42,6 +44,11 @@ export const NavMenu = ({ className, isAdmin, orientation = "horizontal" }: NavM
             <Link href="/projects">Projects</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link href="/contact">Contact Me</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
 
        
         {isAdmin && (
@@ -55,3 +62,4 @@ export const NavMenu = ({ className, isAdmin, orientation = "horizontal" }: NavM
     </NavigationMenu>
   );
 };
+

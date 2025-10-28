@@ -6,10 +6,10 @@ import BlogCardSkeleton from "@/components/ui/blogCardSkeleton";
 
 
 
-export const revalidate = 60;
+export const revalidate = 6000000000;
 
 async function getBlogs() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs`, { next: { revalidate: 60 } });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs`, { next: { revalidate} });
   const json = await res.json();
   return json.data;
 }

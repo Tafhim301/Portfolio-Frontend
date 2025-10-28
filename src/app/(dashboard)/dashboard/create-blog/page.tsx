@@ -1,4 +1,10 @@
-import BlogForm from "@/components/dashboard/BlogForm";
+"use client"
+import dynamic from 'next/dynamic';
+
+const BlogForm = dynamic(
+  () => import('@/components/dashboard/BlogForm'),
+  { ssr: false }
+);
 
 export default function NewBlogPage() {
   return (

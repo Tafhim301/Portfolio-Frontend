@@ -75,36 +75,34 @@ export default function AdvancedBlogForm({
     },
   });
 
-
-  const calculateWordCount = (html: string) => {
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html || "";
-    const text = tmp.textContent || tmp.innerText || "";
-    return text.trim().split(/\s+/).filter(Boolean).length;
-  };
-
-
-  useEffect(() => {
-    const saved = (() => {
-      try {
-        const raw = localStorage.getItem(autosaveKey);
-        return raw ? JSON.parse(raw) : null;
-      } catch {
-        return null;
-      }
-    })();
-
-    if (saved && mode === "create") {
-      form.reset({
-        title: saved.title ?? "",
-        excerpt: saved.excerpt ?? "",
-        content: saved.content ?? "",
-        tags: saved.tags ?? "",
-        coverFile: null,
-      });
-      setCoverPreview(saved.coverImage ?? undefined);
+useEffect(() => {
+  const sub = form.watch((value, { name }) => {
+    if (name === "content" && typeof document !== "undefined") {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = value.content || "";
+      const text = tmp.textContent || tmp.innerText || "";
+      setWordCount(text.trim().split(/\s+/).filter(Boolean).length);
     }
-  }, [form, mode, autosaveKey]);
+  });
+  return () => sub.unsubscribe();
+}, [form]);
+
+useEffect(() => {
+  if (mode !== "create" || typeof window === "undefined") return;
+
+  const interval = setInterval(() => {
+    const values = form.getValues();
+    const payload = {
+      title: values.title,
+      excerpt: values.excerpt,
+      content: values.content,
+      tags: values.tags,
+      coverImage: coverPreview,
+    };
+    localStorage.setItem(autosaveKey, JSON.stringify(payload));
+  }, 5000);
+  return () => clearInterval(interval);
+}, [form, coverPreview, autosaveKey, mode]);
 
   useEffect(() => {
 
@@ -124,14 +122,7 @@ export default function AdvancedBlogForm({
     return () => clearInterval(interval);
   }, [form, coverPreview, autosaveKey, mode]);
 
-  useEffect(() => {
-    const sub = form.watch((value, { name }) => {
-      if (name === "content") {
-        setWordCount(calculateWordCount(value.content || ""));
-      }
-    });
-    return () => sub.unsubscribe();
-  }, [form]);
+
 
 
   const onSubmit = async (values: BlogFormValues) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthProvider";
 
 
 
@@ -23,8 +25,9 @@ const loginSchema = z.object({
 type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter();
+  
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   
   const {
@@ -37,29 +40,14 @@ export default function LoginPage() {
   
   const onSubmit = async (data: LoginSchema) => {
     try {
-      setLoading(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include", 
-      });
 
-      const json = await res.json();
+      await login(data);
       
-      if (!res.ok) {
-        toast.error(json?.message || "Invalid credentials");
-        setLoading(false);
-        return;
-      }
+    } catch (error) {
+      toast.error("Login failed. Please check your credentials and try again.");
       
-      toast.success("Login successful");
-      router.push("/dashboard");
-    } catch (err) {
-      toast.error(`Something went wrong`);
-    } finally {
+    }
+    finally{
       setLoading(false);
     }
   };
