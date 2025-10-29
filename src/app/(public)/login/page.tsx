@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthProvider";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 
@@ -25,11 +26,14 @@ const loginSchema = z.object({
 type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
-  
+
+  const [loading, setLoading] = useState(false);
+  const { login, user, loading: userLoading } = useAuth();
+  const router = useRouter();
+
+
+
   const {
     register,
     handleSubmit,
@@ -37,24 +41,67 @@ export default function LoginPage() {
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
   });
-  
+
+  useEffect(() => {
+    if (user && !userLoading) {
+      router.push('/dashboard');
+      toast.warning("You are already logged in.");
+    }
+  }, [user, userLoading, router]);
+
+
   const onSubmit = async (data: LoginSchema) => {
     try {
 
       await login(data);
-      
+
     } catch (error) {
       toast.error("Login failed. Please check your credentials and try again.");
-      
+
     }
-    finally{
+    finally {
       setLoading(false);
     }
   };
-  
+
+  if (userLoading) {
+    return (
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+     
+        <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-black to-[#2b0707]">
+          <div className="relative z-10 text-center px-10 max-w-md space-y-4">
+            <Skeleton className="h-10 w-full bg-gray-700/50" />
+            <Skeleton className="h-6 w-full bg-gray-700/50" />
+            <Skeleton className="h-6 w-3/4 mx-auto bg-gray-700/50" />
+          </div>
+        </div>
+
+        {/* Right Side Skeleton */}
+        <div className="flex items-center justify-center p-6">
+          <Card className="w-full max-w-sm p-6 shadow-lg">
+            <CardHeader>
+              <Skeleton className="h-8 w-3/4 mx-auto" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-4 w-5/6 mx-auto" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      {/* Left Side - Image / Branding */}
+    
       <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-black to-[#2b0707]">
         <div className="absolute inset-0 opacity-40">
           <Image

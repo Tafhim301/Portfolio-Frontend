@@ -17,7 +17,7 @@ async function getBlog(slug: string) {
 export default async function BlogDetailsPage({ params }: { params: { slug: string } }) {
   const blog = await getBlog(params.slug);
 
-  // Convert Delta JSON (string) -> HTML
+
   let htmlContent = "";
   try {
     const delta = typeof blog.content === "string" ? JSON.parse(blog.content) as Delta : blog.content;
