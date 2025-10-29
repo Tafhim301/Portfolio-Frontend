@@ -29,7 +29,7 @@ export default async function BlogDetailsPage({ params }: { params: { slug: stri
 
   return (
     <div className="max-w-3xl mt-8 mx-auto px-4 py-16">
-      <Card className="space-y-6">
+      <Card className="space-y-6 p-5">
         <CardHeader>
           <CardTitle className="text-4xl font-bold">{blog.title}</CardTitle>
           <CardDescription>

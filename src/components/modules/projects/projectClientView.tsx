@@ -1,5 +1,6 @@
 "use client";
 
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -25,9 +26,12 @@ import {
   ChevronRight,
   CheckCircle,
   Images,
+  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Project } from "@/types";
+import ScrollDevIcons from "./ScrollDevIcon";
 
 export default function ProjectClientView({ project }: { project: Project }) {
   const router = useRouter();
@@ -40,9 +44,26 @@ export default function ProjectClientView({ project }: { project: Project }) {
     }
   }, [modalApi, selectedImageIndex]);
 
+  const renderDescription = (desc: string) => {
+    try {
+      if (desc.trim().startsWith('{"ops":')) {
+        const delta = JSON.parse(desc);
+        const converter = new QuillDeltaToHtmlConverter(delta.ops, {
+          paragraphTag: "p",
+          linkTarget: "_blank",
+        });
+        return { __html: converter.convert() };
+      }
+    } catch (err) {
+      console.warn("Failed to parse Quill delta:", err);
+    }
+    return { __html: desc };
+  };
+
+
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900 min-h-screen">
-      {/* --- Back Button --- */}
+      {/* Back Button */}
       <div className="container max-w-7xl mx-auto px-4 pt-8">
         <Button
           variant="ghost"
@@ -54,13 +75,13 @@ export default function ProjectClientView({ project }: { project: Project }) {
         </Button>
       </div>
 
-      {/* --- Project Details Card --- */}
+      {/* Project Details */}
       <section className="container max-w-7xl mx-auto px-4 pt-12 pb-24">
         <Card className="overflow-hidden border-none shadow-2xl bg-white/90 dark:bg-gray-900/80 backdrop-blur-xl">
           <CardContent className="p-8 md:p-10">
             <div className="grid lg:grid-cols-5 gap-12 xl:gap-16 items-start">
-              {/* Left: Thumbnail & Mini Gallery */}
-              <div className="lg:col-span-3 space-y-4">
+              {/* Left - Images */}
+              <div className="lg:col-span-3 space-y-6">
                 <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl">
                   <Image
                     src={project.thumbnail}
@@ -68,13 +89,12 @@ export default function ProjectClientView({ project }: { project: Project }) {
                     fill
                     priority
                     className="object-cover transition-transform duration-700 hover:scale-105"
-                    sizes="(max-width: 1024px) 100vw, 60vw"
                   />
                 </div>
 
-                {/* --- Mini Preview Gallery --- */}
+                {/* Mini Gallery */}
                 {project.demoImages?.length > 0 && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                     {project.demoImages.slice(0, 4).map((img, i) => (
                       <Dialog key={i} onOpenChange={(open) => !open && setSelectedImageIndex(null)}>
                         <DialogTrigger asChild>
@@ -115,7 +135,6 @@ export default function ProjectClientView({ project }: { project: Project }) {
                         </DialogContent>
                       </Dialog>
                     ))}
-
                     {project.demoImages.length > 4 && (
                       <Button
                         variant="outline"
@@ -130,15 +149,11 @@ export default function ProjectClientView({ project }: { project: Project }) {
                 )}
               </div>
 
-              {/* Right: Project Info */}
+              {/* Right - Info */}
               <div className="lg:col-span-2 space-y-6">
                 <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-snug">
                   {project.title}
                 </h1>
-
-                <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {project.description}
-                </p>
 
                 {/* Meta Info */}
                 <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-gray-500 dark:text-gray-400 border-t dark:border-gray-700 pt-4">
@@ -185,7 +200,7 @@ export default function ProjectClientView({ project }: { project: Project }) {
                     <ul className="space-y-2">
                       {project.features.map((f, i) => (
                         <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                          <ChevronRight className="h-4 w-4 text-red-500 mt-1" />
+                          <ChevronRight className="h-4 w-4 text-red-500 mt-1 flex-shrink-0" />
                           {f}
                         </li>
                       ))}
@@ -213,38 +228,65 @@ export default function ProjectClientView({ project }: { project: Project }) {
                 )}
               </div>
             </div>
+
+            {/* Description + Right Panel with Gradient + CTA */}
+            <div className="grid lg:grid-cols-3 gap-10 py-10 border-t dark:border-gray-800 mt-10">
+              {/* Left: Description */}
+              <div className="lg:col-span-2">
+                <div
+                  className=""
+                  dangerouslySetInnerHTML={renderDescription(project.description)}
+                />
+              </div>
+
+              <aside className="lg:col-span-1 relative overflow-hidden rounded-2xl bg-gradient-to-b from-black via-gray-900 to-red-950 p-8 flex flex-col items-center justify-center min-h-[600px] border border-red-500/20">
+                {/* Animated Gradient Layers */}
+                <div className="absolute inset-0 opacity-40">
+                  <div className="absolute top-0 left-0 w-80 h-80 bg-red-600/40 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+                  <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full mix-blend-multiply filter blur-3xl animation-delay-2000"></div>
+                  <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-gray-800/40 rounded-full mix-blend-multiply filter blur-3xl animation-delay-4000"></div>
+                </div>
+
+                {/* Floating Dev Icons — scroll reactive */}
+                <ScrollDevIcons />
+
+                {/* CTA */}
+                <div className="relative z-20 mt-10 text-center space-y-4">
+                  <div className="flex justify-center">
+                    <Sparkles className="h-8 w-8 text-red-500 animate-pulse" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Ready to Build?</h3>
+                  <p className="text-sm text-gray-300 max-w-xs mx-auto">
+                    Let’s turn your idea into a blazing reality.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <Button
+                      size="sm"
+                      className="bg-red-600 hover:bg-red-700 text-white shadow-lg"
+                      onClick={() => router.push("/contact")}
+                    >
+                      Start a Project
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className=" hover:bg-gray-2000"
+                      onClick={() => router.push("/projects")}
+                    >
+                      More Projects
+                    </Button>
+                  </div>
+                </div>
+              </aside>
+
+
+            </div>
           </CardContent>
         </Card>
       </section>
 
-      {/* --- CTA Footer --- */}
-      <section className="py-20 md:py-28 bg-gradient-to-br from-gray-100/80 to-white/90 dark:from-gray-900/50 dark:to-gray-950/50 text-center border-t dark:border-gray-800">
-        <div className="container max-w-4xl mx-auto px-4">
-          <h3 className="text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
-            Like what you see?
-          </h3>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Discover more projects or collaborate with us to build something extraordinary.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-              onClick={() => router.push("/projects")}
-            >
-              All Projects
-            </Button>
-            <Button
-              size="lg"
-              className="bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-500/20"
-              onClick={() => router.push("/contact")}
-            >
-              Contact
-            </Button>
-          </div>
-        </div>
-      </section>
+
     </div>
   );
 }
